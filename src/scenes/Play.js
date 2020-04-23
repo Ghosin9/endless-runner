@@ -10,6 +10,7 @@ class Play extends Phaser.Scene {
         this.jumpSpeed = -1000;
         this.tileOffset = 100;
         this.backgroundSpeed = 4;
+        this.score = 0;
 
         //add tileSprite background
         this.spongebob = this.add.tileSprite(0, 0, game.config.width, game.config.height, "background").setOrigin(0);
@@ -19,7 +20,6 @@ class Play extends Phaser.Scene {
             fontFamily: 'Courier',
             fontSize: '28px',
             backgroundColor: '#CCC',
-            color: '#0000FF',
             align: 'right',
             padding: {
                 top: 5,
@@ -30,6 +30,21 @@ class Play extends Phaser.Scene {
         this.restart = this.add.text(game.config.width/2, game.config.height/2, "Press SPACE to Restart", gameText).setOrigin(0.5);
         this.gameOverText.alpha = 0;
         this.restart.alpha = 0;
+
+        //score text
+        let scoreText = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#FFFF00',
+            color: "#000000",
+            align: 'right',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+        }
+        this.curScore = this.add.text(this.tileOffset/2, this.tileOffset/2, this.score, scoreText).setOrigin(0);
+        this.curhighScore = this.add.text(game.config.width - this.tileOffset*3, this.tileOffset/2, "High Score: " + game.settings.highScore, scoreText).setOrigin(0);
 
         //making ground tiles
         this.ground = this.add.group();
@@ -97,6 +112,14 @@ class Play extends Phaser.Scene {
             if (this.net.x <= 0 - this.net.width)
                 this.net.x = game.config.width;
             
+            //update score
+            this.curScore.text = ++this.score;
+
+            //update highScore
+            if(this.score >= game.settings.highScore)
+                game.settings.highScore = this.score;
+
+            this.curhighScore.text = "High Score: " + game.settings.highScore;
         } else {
             this.gameOverText.alpha = 1;
             this.restart.alpha = 1;

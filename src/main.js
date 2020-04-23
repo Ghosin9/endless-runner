@@ -30,4 +30,5 @@ let game = new Phaser.Game(config);
 
 game.settings = {
     gameOver: false,
+    highScore: 0,
 }
