@@ -98,7 +98,6 @@ class Play extends Phaser.Scene {
 
             if(this.bird.body.touching.down) {
                 //play walking animations
-
             } else {
                 //play jumping animation
             }
