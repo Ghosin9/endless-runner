@@ -38,7 +38,7 @@ class Play extends Phaser.Scene {
         //add game over text
         this.gameOverText = this.add.text(game.config.width/2, game.config.height/2 - game.settings.textOffset, "GAME OVER", gameText).setOrigin(0.5);
         this.restart = this.add.text(game.config.width/2, game.config.height/2, "Press SPACE to Restart", gameText).setOrigin(0.5);
-        this.hiScore = this.add.text(game.config.width/2, game.config.height/2 + game.settings.textOffset, "HiScore: ", gameText).setOrigin(0.5);
+        this.hiScore = this.add.text(game.config.width/2, game.config.height/2 + game.settings.textOffset, "HiScore: " + game.settings.gameOver, gameText).setOrigin(0.5);
         //but make it transparent
         this.gameOverText.alpha = 0;
         this.restart.alpha = 0;
