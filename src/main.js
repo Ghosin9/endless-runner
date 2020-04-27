@@ -9,8 +9,12 @@
 
 let config = {
     type: Phaser.AUTO,
-    width: 1000,
-    height: 640,
+    width: 1024,
+    height: 512,
+
+    scale: {
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+    },
 
     physics: {
         default: "arcade",
@@ -31,4 +35,7 @@ let game = new Phaser.Game(config);
 game.settings = {
     gameOver: false,
     highScore: 0,
+
+    tileOffset: 100,
+    textOffset: 64,
 }
