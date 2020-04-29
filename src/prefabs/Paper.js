@@ -1,7 +1,9 @@
 class Paper extends Phaser.Physics.Arcade.Sprite {
-    constructor() {
+    constructor(scene, speed) {
         scene.add.existing(this);
         scene.physics.add.existing(this);
+
+        
     }
 
     update() {

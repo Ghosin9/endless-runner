@@ -5,20 +5,26 @@ class Play extends Phaser.Scene {
 
     create() {
         //physics
-        this.backgroundSpeed = 3;
-        this.foregroundSpeed = 4;
+        this.backgroundSpeed = 1;
+        this.foregroundSpeed = 3;
+        this.playerSpeed = 150;
+
+        //level
+        this.level = 0;
+        this.collectTimer = Phaser.Math.Between(10, 15);
 
         //jumps
         this.jumpSpeed = -650;
         this.jumpCounter = 0;
+        this.fallSpeed = 600;
 
         //desk speed
-        this.deskSpeed = -600;
-        this.deskSpeedMax = -1000;
+        this.obSpeed = -600;
+        this.obSpeedMax = -1000;
 
         //paper speed
-        this.paperSpeed = -400;
-        this.paperSpeedMax = -1500;
+        this.paperSpeed = -1000;
+        this.paperSpeedMax = -1400;
 
         //current score
         this.score = 0;
@@ -74,10 +80,20 @@ class Play extends Phaser.Scene {
         this.curScore = this.add.text(game.settings.textOffset/2, game.settings.textOffset/2, this.score, scoreText).setOrigin(0);
 
         //set up desks and add first desk
-        this.desks = this.add.group({
+        this.obstacles = this.add.group({
             runChildUpdate: true,
         });
-        this.addDesk();
+        this.addObstacle();
+
+        //set up paper
+        this.papers = this.add.group({
+            runChildUpdate: true,
+        });
+
+        //set up collectables
+        this.collectables = this.add.group({
+            runChildUpdate: true,
+        });
 
         //set up player
         this.player = this.physics.add.sprite(game.config.width/6, game.config.height - game.settings.tileOffset-60, "player", "p_stand");
@@ -136,21 +152,17 @@ class Play extends Phaser.Scene {
             this.foreground.tilePositionX += this.foregroundSpeed;
 
             //check collision between desk and bird
-            this.physics.collide(this.player, this.desks, this.obstacleCollision, null, this);
+            this.physics.collide(this.player, this.obstacles, this.obstacleCollision, null, this);
 
-            // //left right mechanics
-            // if(this.cursors.left.isDown) {
-            //     this.player.setVelocityX(-this.speed);
-            //     this.player.setFlip(true, false);
-            //     //play walking animation
-            // } else if(this.cursors.right.isDown) {
-            //     this.player.setVelocityX(this.speed);
-            //     this.player.resetFlip();
-            //     //play walking animation
-            // } else {
-            //     this.player.body.velocity.x = 0;
-            //     //play idle animation
-            // }
+            //left right mechanics
+            if(this.cursors.left.isDown) {
+                this.player.setVelocityX(-this.playerSpeed);
+            } else if(this.cursors.right.isDown) {
+                this.player.setVelocityX(this.playerSpeed);
+                this.player.resetFlip();
+            } else {
+                this.player.setVelocityX(0);
+            }
 
             if(this.player.body.touching.down) {
                 //play walking animations
@@ -162,21 +174,21 @@ class Play extends Phaser.Scene {
 
             //attempted variable jump code, currently way too inconsistent
             //because update is called every frame, and the duration pressed depends on the framerate
-            // if (this.player.body.touching.down && Phaser.Input.Keyboard.DownDuration(this.cursors.space, 9)){
+            // if (this.player.body.touching.down && Phaser.Input.Keyboard.DownDuration(this.cursors.up, 9)){
             //     this.player.body.setVelocityY(this.jumpSpeed);
-            //     console.log("low Jump: " + this.cursors.space.getDuration());
-            // } else if (this.player.body.touching.down && Phaser.Input.Keyboard.DownDuration(this.cursors.space, 150)) {
+            //     console.log("low Jump: " + this.cursors.up.getDuration());
+            // } else if (this.player.body.touching.down && Phaser.Input.Keyboard.DownDuration(this.cursors.up, 150)) {
             //     this.player.body.setVelocityY(this.jumpSpeed);
-            //     console.log("high Jump: " + this.cursors.space.getDuration());
+            //     console.log("high Jump: " + this.cursors.up.getDuration());
             // }
 
             //attempt 2 for variable jumps
             // https://www.html5gamedevs.com/topic/3050-how-to-make-the-player-do-small-medium-long-jumps/
-            if(this.player.body.touching.down && Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+            if(this.player.body.touching.down && (Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.cursors.space))) {
                 this.jumpCounter = 1;
                 this.player.setVelocityY(this.jumpSpeed);
                 //console.log("low jump");
-            } else if (this.cursors.space.isDown && this.jumpCounter != 0) {
+            } else if ((this.cursors.up.isDown || this.cursors.space.isDown) && this.jumpCounter != 0) {
                 if(this.jumpCounter > 10) {
                     this.jumpCounter = 0;
                 } else {
@@ -189,9 +201,13 @@ class Play extends Phaser.Scene {
             }
 
             //basic jump code
-            // if (this.player.body.touching.down && Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+            // if (this.player.body.touching.down && Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
             //     this.player.body.setVelocityY(this.jumpSpeed);
             // }
+
+            if(!this.player.body.touching.down && Phaser.Input.Keyboard.JustDown(this.cursors.down)) {
+                    this.player.setVelocityY(this.fallSpeed);
+            }
             
             //update score
             this.curScore.text = ++this.score;
@@ -204,6 +220,10 @@ class Play extends Phaser.Scene {
             if(this.score >= game.settings.highScore) {
                 game.settings.highScore = this.score;
                 this.hiScore.text = "High Score: " + game.settings.highScore;
+            }
+
+            if(this.player.body.velocity.x >= 0){
+                this.player.setVelocityX(0);
             }
 
             if(Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
@@ -231,16 +251,23 @@ class Play extends Phaser.Scene {
         localStorage.setItem("hiScore", game.settings.highScore.toString());
     }
 
-    addDesk() {
-        let desk = new Desk(this, this.deskSpeed, Phaser.Math.Between(1,2));
-        this.desks.add(desk);
+    addObstacle() {
+        let ob = new Obstacle(this, this.obSpeed, Phaser.Math.Between(1,4));
+        this.obstacles.add(ob);
+    }
+
+    addPaper() {
+        let paper = new Paper(this, this.paperSpeed);
+        this.papers.add(paper);
     }
 
     increaseDifficulty() {
+        ++this.level;
+        console.log("level: " + this.level);
         //capping deskSpeed @ deskSpeedMax
-        if(this.deskSpeed >= this.deskSpeedMax) {
+        if(this.obSpeed >= this.obSpeedMax) {
             //increase deskSpeed
-            this.deskSpeed -= 25;
+            this.obSpeed -= 25;
             //console.log("Speed: " + this.deskSpeed);
 
             //increase music speed
@@ -255,6 +282,10 @@ class Play extends Phaser.Scene {
 
             //increase background speed
             ++this.backgroundSpeed;
+        }
+
+        if(this.level>=10){
+
         }
     }
 }
