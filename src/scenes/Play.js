@@ -5,11 +5,14 @@ class Play extends Phaser.Scene {
 
     create() {
         //physics
-        this.physics.world.gravity.y = 2600;
-        this.jumpSpeed = -990;
+        //jumps
+        this.jumpSpeed = -650;
+        this.jumpCounter = 0;
+
         this.backgroundSpeed = 3;
         this.foregroundSpeed = 4;
         this.deskSpeed = -600;
+        this.deskSpeedMax = -1000;
         this.score = 0;
 
         //add tileSprite background
@@ -38,7 +41,7 @@ class Play extends Phaser.Scene {
         //add game over text
         this.gameOverText = this.add.text(game.config.width/2, game.config.height/2 - game.settings.textOffset, "GAME OVER", gameText).setOrigin(0.5);
         this.restart = this.add.text(game.config.width/2, game.config.height/2, "Press SPACE to Restart", gameText).setOrigin(0.5);
-        this.hiScore = this.add.text(game.config.width/2, game.config.height/2 + game.settings.textOffset, "HiScore: " + game.settings.gameOver, gameText).setOrigin(0.5);
+        this.hiScore = this.add.text(game.config.width/2, game.config.height/2 + game.settings.textOffset, "High Score: " + game.settings.highScore, gameText).setOrigin(0.5);
         //but make it transparent
         this.gameOverText.alpha = 0;
         this.restart.alpha = 0;
@@ -73,14 +76,17 @@ class Play extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);
 
         //create animations
-        this.anims.create({
+        //animation speed up counter
+        this.n = 1;
+
+        this.walk = this.anims.create({
             key: "walk",
             frames: this.anims.generateFrameNames("player", {
                 prefix: "p_walk_",
                 start: 1,
                 end: 4,
             }),
-            frameRate: 5,
+            frameRate: 3,
         });
 
         this.anims.create({
@@ -89,7 +95,6 @@ class Play extends Phaser.Scene {
             frames: [
                 {frame: "p_stand"}
             ],
-            repeat: -1,
         });
 
         this.anims.create({
@@ -105,11 +110,14 @@ class Play extends Phaser.Scene {
 
         //set up phaser provided keyboard input
         this.cursors = this.input.keyboard.createCursorKeys();
-    }
 
-    addDesk() {
-        let desk = new Desk(this, this.deskSpeed);
-        this.desks.add(desk);
+        //increase difficulty every 5 seconds
+        this.difficultyTimer = this.time.addEvent({
+            delay: 5000,
+            callback: this.increaseDifficulty,
+            callbackScope: this,
+            loop: true,
+        });
     }
 
     update() {
@@ -144,10 +152,38 @@ class Play extends Phaser.Scene {
                 this.player.anims.play('jump');
             }
 
-            //actual jump
-            if(this.player.body.touching.down && Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
-                this.player.body.setVelocityY(this.jumpSpeed);
+            //attempted variable jump code, currently way too inconsistent
+            //because update is called every frame, and the duration pressed depends on the framerate
+            // if (this.player.body.touching.down && Phaser.Input.Keyboard.DownDuration(this.cursors.space, 9)){
+            //     this.player.body.setVelocityY(this.jumpSpeed);
+            //     console.log("low Jump: " + this.cursors.space.getDuration());
+            // } else if (this.player.body.touching.down && Phaser.Input.Keyboard.DownDuration(this.cursors.space, 150)) {
+            //     this.player.body.setVelocityY(this.jumpSpeed);
+            //     console.log("high Jump: " + this.cursors.space.getDuration());
+            // }
+
+            //attempt 2 for variable jumps
+            // https://www.html5gamedevs.com/topic/3050-how-to-make-the-player-do-small-medium-long-jumps/
+            if(this.player.body.touching.down && Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+                this.jumpCounter = 1;
+                this.player.setVelocityY(this.jumpSpeed);
+                //console.log("low jump");
+            } else if (this.cursors.space.isDown && this.jumpCounter != 0) {
+                if(this.jumpCounter > 10) {
+                    this.jumpCounter = 0;
+                } else {
+                    ++this.jumpCounter;
+                    this.player.setVelocityY(this.jumpSpeed);
+                    //console.log("high jump");
+                }
+            } else if (this.jumpCounter != 0) {
+                this.jumpCounter = 0;
             }
+
+            //basic jump code
+            // if (this.player.body.touching.down && Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+            //     this.player.body.setVelocityY(this.jumpSpeed);
+            // }
             
             //update score
             this.curScore.text = ++this.score;
@@ -171,12 +207,46 @@ class Play extends Phaser.Scene {
 
     obstacleCollision(p, ob)
     {
+        //set game over to true
         game.settings.gameOver = true;
 
+        //making game over text visisble
         this.gameOverText.alpha = 1;
         this.restart.alpha = 1;
         this.hiScore.alpha = 1;
 
-        game.settings.gameOver = true;
+        //stop the difficulty timer
+        this.difficultyTimer.destroy();
+
+        //local storage setting hiScore
+        //Inspired by Nathan Altice's code https://github.com/nathanaltice/PaddleParkourP3/blob/master/src/scenes/GameOver.js
+        localStorage.setItem("hiScore", game.settings.highScore.toString());
+    }
+
+    addDesk() {
+        let desk = new Desk(this, this.deskSpeed);
+        this.desks.add(desk);
+    }
+
+    increaseDifficulty() {
+        //capping deskSpeed @ deskSpeedMax
+        if(this.deskSpeed >= this.deskSpeedMax) {
+            //increase deskSpeed
+            this.deskSpeed -= 25;
+            //console.log("Speed: " + this.deskSpeed);
+
+            //increase music speed
+
+
+            //increase sprite walking speed
+            this.player.anims.setTimeScale(this.n);
+            this.n += 0.3;
+
+            //increase foreground speed
+            ++this.foregroundSpeed;
+
+            //increase background speed
+            ++this.backgroundSpeed;
+        }
     }
 }

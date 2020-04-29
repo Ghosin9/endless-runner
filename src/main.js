@@ -22,7 +22,7 @@ let config = {
             //debug: true,
             gravity: {
                 x: 0,
-                y: 0,
+                y: 2500,
             }
         }
     },
