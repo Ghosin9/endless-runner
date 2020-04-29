@@ -5,14 +5,22 @@ class Play extends Phaser.Scene {
 
     create() {
         //physics
+        this.backgroundSpeed = 3;
+        this.foregroundSpeed = 4;
+
         //jumps
         this.jumpSpeed = -650;
         this.jumpCounter = 0;
 
-        this.backgroundSpeed = 3;
-        this.foregroundSpeed = 4;
+        //desk speed
         this.deskSpeed = -600;
         this.deskSpeedMax = -1000;
+
+        //paper speed
+        this.paperSpeed = -400;
+        this.paperSpeedMax = -1500;
+
+        //current score
         this.score = 0;
 
         //add tileSprite background
@@ -224,7 +232,7 @@ class Play extends Phaser.Scene {
     }
 
     addDesk() {
-        let desk = new Desk(this, this.deskSpeed);
+        let desk = new Desk(this, this.deskSpeed, Phaser.Math.Between(1,2));
         this.desks.add(desk);
     }
 

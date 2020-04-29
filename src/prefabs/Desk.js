@@ -1,7 +1,12 @@
 class Desk extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, speed) {
-        super(scene, game.config.width+game.settings.tileOffset, 
-            Phaser.Math.Between(game.config.height-game.settings.tileOffset*1.5, game.config.height-game.settings.tileOffset/2), "desk");
+    constructor(scene, speed, num) {
+        if(num==1) {
+            super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset*1.5, 
+                game.config.height-game.settings.tileOffset/2), "objects", "desk_1");
+        } else { //num==2
+            super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset*1.5, 
+                game.config.height-game.settings.tileOffset/2), "objects", "desk_2");
+        }
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
