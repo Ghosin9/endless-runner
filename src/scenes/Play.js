@@ -147,6 +147,7 @@ class Play extends Phaser.Scene {
     }
 
     update() {
+
         if(!game.settings.gameOver) {
             //scrolling background
             this.background.tilePositionX += this.backgroundSpeed;
@@ -166,22 +167,18 @@ class Play extends Phaser.Scene {
                 this.player.setVelocityX(0);
             }
 
-            //attempted variable jump code, currently way too inconsistent
-            //because update is called every frame, and the duration pressed depends on the framerate
-            // if (this.player.body.touching.down && Phaser.Input.Keyboard.DownDuration(this.cursors.up, 9)){
-            //     this.player.body.setVelocityY(this.jumpSpeed);
-            //     console.log("low Jump: " + this.cursors.up.getDuration());
-            // } else if (this.player.body.touching.down && Phaser.Input.Keyboard.DownDuration(this.cursors.up, 150)) {
-            //     this.player.body.setVelocityY(this.jumpSpeed);
-            //     console.log("high Jump: " + this.cursors.up.getDuration());
-            // }
-
             //attempt 2 for variable jumps
             // https://www.html5gamedevs.com/topic/3050-how-to-make-the-player-do-small-medium-long-jumps/
             if(this.player.body.touching.down && (Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.cursors.space))) {
                 this.jumpCounter = 1;
                 this.player.setVelocityY(this.jumpSpeed);
-                this.sound.play("jump");
+
+                this.randomJump = Phaser.Math.Between(1,2);
+                if(this.randomJump == 1)
+                    this.sound.play("jump1");
+                else
+                    this.sound.play("jump2");
+                
                 //console.log("low jump");
             } else if ((this.cursors.up.isDown || this.cursors.space.isDown) && this.jumpCounter != 0) {
                 if(this.jumpCounter > 10) {
@@ -204,18 +201,15 @@ class Play extends Phaser.Scene {
                 this.player.anims.play('jump');
             }
 
-            if(this.player.y >= 370 && this.player.y <= 405) {
+            //adjust hitbox of player if jumping
+            if(this.player.y >= 380) {
                 this.player.body.setSize(40, 115, true);
             } else {
                 this.player.body.setSize(40, 95, false);
                 this.player.body.setOffset(20, 0);
             }
 
-            //basic jump code
-            // if (this.player.body.touching.down && Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
-            //     this.player.body.setVelocityY(this.jumpSpeed);
-            // }
-
+            //if player presses down while in air, jump down
             if(!this.player.body.touching.down && Phaser.Input.Keyboard.JustDown(this.cursors.down)) {
                     this.player.setVelocityY(this.fallSpeed);
             }
@@ -233,10 +227,6 @@ class Play extends Phaser.Scene {
                 this.hiScore.text = "High Score: " + game.settings.highScore;
             }
 
-            if(this.player.body.velocity.x >= 0){
-                this.player.setVelocityX(0);
-            }
-
             if(Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
                 this.scene.restart();
                 game.settings.gameOver = false;
@@ -246,6 +236,20 @@ class Play extends Phaser.Scene {
 
     obstacleCollision(p, ob)
     {
+        //play collision sound
+        if(ob.num <= 2){
+            this.sound.play("deskHit");
+        } else if (ob.num == 3) {
+            this.sound.play("suitcaseJump");
+        } else if (ob.num == 4) {
+            this.sound.play("plantHit");
+        }
+
+        //slide off death animation
+        this.player.body.setVelocityX(100);
+        this.player.body.setBounce(0.5, 0.5);
+        this.player.body.setDragX(100);
+
         //set game over to true
         game.settings.gameOver = true;
 

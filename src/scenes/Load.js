@@ -24,13 +24,16 @@ class Load extends Phaser.Scene {
 
         //sound assets
         this.load.path = "assets/sound/";
-        this.load.audio("jump", "jump.wav");
-        this.load.audio("paperCrumble", "PaperCrumble.wav");
-        this.load.audio("paperHit", "PaperHit.wav");
-        this.load.audio("plantHit", "PlantCrash.wav");
-        this.load.audio("staple", "Stapler.wav");
-        this.load.audio("suitcaseJump", "SuitcaseJump.wav");
-        this.load.audio("deskHit", "TableHit.wav");
+
+        this.load.audio("jump1", "sfx_jump_1.wav");
+        this.load.audio("jump2", "sfx_jump_2.wav");
+        this.load.audio("paperCrumble1", "sfx_crumpled_paper_1.wav");
+        this.load.audio("paperCrumble2", "sfx_crumpled_paper_2.wav");
+        this.load.audio("paperHit", "sfx_paper_hit.wav");
+        this.load.audio("plantHit", "sfx_plant_hit.wav");
+        this.load.audio("select", "sfx_select.wav");
+        this.load.audio("suitcaseJump", "sfx_suitcase_jump.wav");
+        this.load.audio("deskHit", "sfx_desk_hit.wav");
     }
 
     create() {

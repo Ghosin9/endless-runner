@@ -45,7 +45,7 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
     update() {
         super.update();
 
-        if(this.newObstacle && this.x < this.random) {
+        if(!game.settings.gameOver && this.newObstacle && this.x < this.random) {
             this.newObstacle = false;
 
             this.scene.addObstacle(this.parent, this.speed);
@@ -53,10 +53,6 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
 
         if(this.x < -this.width) {
             this.destroy();
-        }
-
-        if(game.settings.gameOver) {
-            this.setVelocityX(0);
         }
     }
 }
