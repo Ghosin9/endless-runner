@@ -19,7 +19,7 @@ class Play extends Phaser.Scene {
         this.fallSpeed = 600;
 
         //desk speed
-        this.obSpeed = -600;
+        this.obSpeed = -400;
         this.obSpeedMax = -1000;
 
         //paper speed
@@ -98,6 +98,8 @@ class Play extends Phaser.Scene {
         //set up player
         this.player = this.physics.add.sprite(game.config.width/6, game.config.height - game.settings.tileOffset-60, "player", "p_stand");
         this.player.setCollideWorldBounds(true);
+        //adjust hitbox
+        this.player.body.setSize(40,115);
 
         //create animations
         //animation speed up counter
@@ -164,14 +166,6 @@ class Play extends Phaser.Scene {
                 this.player.setVelocityX(0);
             }
 
-            if(this.player.body.touching.down) {
-                //play walking animations
-                this.player.anims.play("walk" ,true);
-            } else {
-                //play jumping animation
-                this.player.anims.play('jump');
-            }
-
             //attempted variable jump code, currently way too inconsistent
             //because update is called every frame, and the duration pressed depends on the framerate
             // if (this.player.body.touching.down && Phaser.Input.Keyboard.DownDuration(this.cursors.up, 9)){
@@ -187,6 +181,7 @@ class Play extends Phaser.Scene {
             if(this.player.body.touching.down && (Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.cursors.space))) {
                 this.jumpCounter = 1;
                 this.player.setVelocityY(this.jumpSpeed);
+                this.sound.play("jump");
                 //console.log("low jump");
             } else if ((this.cursors.up.isDown || this.cursors.space.isDown) && this.jumpCounter != 0) {
                 if(this.jumpCounter > 10) {
@@ -198,6 +193,22 @@ class Play extends Phaser.Scene {
                 }
             } else if (this.jumpCounter != 0) {
                 this.jumpCounter = 0;
+            }
+
+            //play animations
+            if(this.player.body.touching.down) {
+                //play walking animations
+                this.player.anims.play("walk" ,true);
+            } else {
+                //play jumping animation
+                this.player.anims.play('jump');
+            }
+
+            if(this.player.y >= 370 && this.player.y <= 405) {
+                this.player.body.setSize(40, 115, true);
+            } else {
+                this.player.body.setSize(40, 95, false);
+                this.player.body.setOffset(20, 0);
             }
 
             //basic jump code
@@ -252,7 +263,8 @@ class Play extends Phaser.Scene {
     }
 
     addObstacle() {
-        let ob = new Obstacle(this, this.obSpeed, Phaser.Math.Between(1,4));
+        this.randomOb = Phaser.Math.Between(1,4)
+        let ob = new Obstacle(this, this.obSpeed, this.randomOb);
         this.obstacles.add(ob);
     }
 
