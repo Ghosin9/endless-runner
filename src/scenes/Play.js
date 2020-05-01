@@ -11,7 +11,7 @@ class Play extends Phaser.Scene {
 
         //level
         this.level = 0;
-        this.collectTimer = Phaser.Math.Between(1, 1);
+        this.collectTimer = Phaser.Math.Between(5, 10);
 
         //box mode
         this.boxMode = false;
@@ -164,6 +164,14 @@ class Play extends Phaser.Scene {
             callbackScope: this,
             loop: true,
         });
+
+        //play background music looping
+        let musicConfig = {
+            volume: 0.05,
+            loop: true,
+        }
+
+        this.sound.play("music", musicConfig);
     }
 
     update() {
@@ -310,6 +318,7 @@ class Play extends Phaser.Scene {
 
     obstacleCollision(p, ob)
     {
+        this.sound.removeByKey("music");
         //play collision sound
         if(ob.num <= 2){
             this.sound.play("deskHit");
