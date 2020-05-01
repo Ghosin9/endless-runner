@@ -1,7 +1,15 @@
 class Paper extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, y, speed) {
+    constructor(scene, y, speed, num) {
 
-        super(scene, game.config.width+40, y, "objects", "paper_2");
+        if(num == 1){
+            super(scene, game.config.width+40, y, "papers", "paper_a_2");
+        } else if(num == 2){
+            super(scene, game.config.width+40, y, "papers", "paper_b_2");
+        } else if(num == 3){
+            super(scene, game.config.width+40, y, "papers", "paper_c_2");
+        } else {
+            super(scene, game.config.width+40, y, "papers", "paper_d_2");
+        }
 
         scene.add.existing(this);
         scene.physics.add.existing(this);

@@ -389,19 +389,30 @@ class Play extends Phaser.Scene {
     }
 
     addPaper() {
+        this.randomPaper = Phaser.Math.Between(1,4);
+
+        let warnPaper;
         let y = this.player.y;
-        let warnPaper = this.add.sprite(game.config.width-40, y, "objects", "paper_1");
+        if(this.randomPaper == 1){
+            warnPaper = this.add.sprite(game.config.width-40, y, "papers", "paper_a_1");
+        } else if(this.randomPaper == 2){
+            warnPaper = this.add.sprite(game.config.width-40, y, "papers", "paper_b_1");
+        } else if(this.randomPaper == 3){
+            warnPaper = this.add.sprite(game.config.width-40, y, "papers", "paper_c_1");
+        } else {
+            warnPaper = this.add.sprite(game.config.width-40, y, "papers", "paper_d_1");
+        }
 
         this.time.addEvent({
             delay: 500,
-            callback: () => {warnPaper.destroy(); this.spawnPaper(y);},
+            callback: () => {warnPaper.destroy(); this.spawnPaper(y, this.randomPaper);},
             callbackScope: this,
         });
     }
 
-    spawnPaper(y){
+    spawnPaper(y, num){
         if(this.boxMode) {
-            let paper = new Paper(this, y, this.paperSpeed);
+            let paper = new Paper(this, y, this.paperSpeed, num);
             this.papers.add(paper);
         }
     }
