@@ -9,7 +9,7 @@ class Load extends Phaser.Scene {
         //menu assets
 
         //cutscene
-        this.load.image("cutscene", "cutscene_combined.png");
+        this.load.image("cutscene", "cutscene/cutscene_combined.png");
 
         //gameplay assets
         this.load.atlas("player", "player.png", "player.json");

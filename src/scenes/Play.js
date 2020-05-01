@@ -16,7 +16,7 @@ class Play extends Phaser.Scene {
         //box mode
         this.boxMode = false;
         this.boxModeSpeed = 300;
-        this.boxModeDifficulty = 2 //the lower the number, the more difficult
+        this.boxModeDif = 4 //the lower the number, the more difficult
 
         this.boxHitBox = this.physics.add.sprite(0, 0);
         this.boxHitBox.body.setSize(50, 50);
@@ -34,9 +34,12 @@ class Play extends Phaser.Scene {
         this.jumpCounter = 0;
         this.fallSpeed = 600;
 
-        //desk speed
+        //obstacle speed
         this.obSpeed = -400;
         this.obSpeedMax = -1000;
+
+        //ceiling difficulty
+        this.ceilingDif = 4 //the lower the number, the more difficult
 
         //current score
         this.score = 0;
@@ -184,6 +187,8 @@ class Play extends Phaser.Scene {
             //update score
             this.curScore.text = ++this.score;
 
+            Phaser.Input.()
+
             //if not in box mode-------------------------------------------------------------------------------------------------- REGULAR MODE
             if(!this.boxMode){
                 //console.log("X: " + this.player.x);
@@ -255,11 +260,14 @@ class Play extends Phaser.Scene {
                 if(!this.player.body.touching.down && Phaser.Input.Keyboard.JustDown(this.cursors.down)) {
                         this.player.setVelocityY(this.fallSpeed);
                 }
+
+                if(this.player.y >= 425)
+                    this.player.y = 400;
                 
             } else { //if in box mode ----------------------------------------------------------------------------------------- BOX MODE
 
                 if(this.player.x >= 120) {
-                    console.log("moving to box position");
+                    //console.log("moving to box position");
                     //move player to back of window
                     this.physics.moveTo(this.player, 110, game.config.height/2, this.boxModeSpeed*2);
                 } else {
@@ -318,36 +326,40 @@ class Play extends Phaser.Scene {
 
     obstacleCollision(p, ob)
     {
-        this.sound.removeByKey("music");
-        //play collision sound
-        if(ob.num <= 2){
-            this.sound.play("deskHit");
-        } else if (ob.num == 3) {
-            this.sound.play("suitcaseJump");
-        } else if (ob.num == 4) {
-            this.sound.play("plantHit");
+        if(!this.boxMode) {
+            this.sound.removeByKey("music");
+            //play collision sound
+            if(ob.num <= 2){
+                this.sound.play("deskHit");
+            } else if (ob.num == 3) {
+                this.sound.play("suitcaseJump");
+            } else if (ob.num == 4) {
+                this.sound.play("plantHit");
+            }
+
+            //slide off death animation
+            p.setTint("0xFF0000");
+            p.body.setVelocityX(100);
+            p.body.setBounce(0.7, 0.7);
+            p.body.setDragX(100);
+
+            //set game over to true
+            game.settings.gameOver = true;
+
+            //making game over text visisble
+            this.gameOverText.alpha = 1;
+            this.restart.alpha = 1;
+            this.hiScore.alpha = 1;
+
+            //stop the difficulty timer
+            this.difficultyTimer.destroy();
+
+            //local storage setting hiScore
+            //Inspired by Nathan Altice's code https://github.com/nathanaltice/PaddleParkourP3/blob/master/src/scenes/GameOver.js
+            localStorage.setItem("hiScore", game.settings.highScore.toString());
+        } else {
+            this.paperCollision(p, ob);
         }
-
-        //slide off death animation
-        p.setTint("0xFF0000");
-        p.body.setVelocityX(100);
-        p.body.setBounce(0.7, 0.7);
-        p.body.setDragX(100);
-
-        //set game over to true
-        game.settings.gameOver = true;
-
-        //making game over text visisble
-        this.gameOverText.alpha = 1;
-        this.restart.alpha = 1;
-        this.hiScore.alpha = 1;
-
-        //stop the difficulty timer
-        this.difficultyTimer.destroy();
-
-        //local storage setting hiScore
-        //Inspired by Nathan Altice's code https://github.com/nathanaltice/PaddleParkourP3/blob/master/src/scenes/GameOver.js
-        localStorage.setItem("hiScore", game.settings.highScore.toString());
     }
 
     paperCollision(p, paper) {
@@ -356,6 +368,9 @@ class Play extends Phaser.Scene {
 
         //clear papers list
         this.papers.clear(true, true);
+
+        //clear obstacles list
+        this.obstacles.clear(true, true);
 
         //reset physics back to reg mode
         this.physics.world.gravity.y = 2500;
@@ -389,11 +404,26 @@ class Play extends Phaser.Scene {
         //save foreground and background speeds
         this.tempForeground = this.foregroundSpeed;
         this.tempBackground = this.backgroundSpeed;
+
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                //this.addObstacle();
+                this.addCeiling();
+            },
+            callbackScope: this,
+        });
     }
 
     addObstacle() {
         this.randomOb = Phaser.Math.Between(1,4)
         let ob = new Obstacle(this, this.obSpeed, this.randomOb);
+        this.obstacles.add(ob);
+    }
+
+    addCeiling() {
+        this.randomC = Phaser.Math.Between(5,6)
+        let ob = new Obstacle(this, this.obSpeed, this.randomC);
         this.obstacles.add(ob);
     }
 
@@ -414,7 +444,10 @@ class Play extends Phaser.Scene {
 
         this.time.addEvent({
             delay: 500,
-            callback: () => {warnPaper.destroy(); this.spawnPaper(y, this.randomPaper);},
+            callback: () => {
+                warnPaper.destroy(); 
+                this.spawnPaper(y, this.randomPaper);
+            },
             callbackScope: this,
         });
     }
@@ -437,6 +470,10 @@ class Play extends Phaser.Scene {
     increaseDifficulty() {
         ++this.level;
         console.log("level: " + this.level);
+
+        if(this.level%this.ceilingDif == 0 ){
+            this.addCeiling();
+        }
 
         if(!this.boxMode){
             //capping deskSpeed @ deskSpeedMax
@@ -471,14 +508,16 @@ class Play extends Phaser.Scene {
 
             //spawn lots of paper!
             this.time.addEvent({
-                delay: 300,
+                delay: 400,
                 repeat: this.numPaper,
-                callback: this.addPaper,
+                callback: () => {
+                    this.addPaper();
+                },
                 callbackScope: this,
             });
 
             //increase the amount of paper spawned every level
-            this.numPaper = Math.floor(this.level/this.boxModeDifficulty);
+            this.numPaper = Math.floor(this.level/this.boxModeDif);
         }
     }
 }

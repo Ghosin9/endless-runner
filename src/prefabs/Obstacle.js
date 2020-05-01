@@ -1,6 +1,7 @@
 class Obstacle extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, speed, num) {
         if(num==1) {
+
             super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset*1.5, 
                 game.config.height-game.settings.tileOffset/2), "objects", "desk_1");
             scene.add.existing(this);
@@ -16,7 +17,11 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
             this.topHitbox.setVelocityX(speed);
 
             scene.obstacles.add(this.topHitbox);
+
+            this.newObstacle = true;
+
         } else if (num==2) {
+
             super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset*1.5, 
                 game.config.height-game.settings.tileOffset/2), "objects", "desk_2");
             scene.add.existing(this);
@@ -32,18 +37,48 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
             this.topHitbox.setVelocityX(speed);
 
             scene.obstacles.add(this.topHitbox);
+
+            this.newObstacle = true;
+
         } else if (num==3) {
+
             super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset, 
                 game.config.height-game.settings.tileOffset/2), "objects", "trash");
             scene.add.existing(this);
             scene.physics.add.existing(this);
-        } else { //num==4
+
+            this.newObstacle = true;
+
+        } else if (num == 4){
+
             super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset*1.5, 
                 game.config.height-game.settings.tileOffset/2), "objects", "plant");
             scene.add.existing(this);
             scene.physics.add.existing(this);
             //adjust hitbox
             this.body.setSize(56, 100);
+
+            this.newObstacle = true;
+
+        } else if (num == 5) {
+
+            super(scene, game.config.width+game.settings.tileOffset*2.75, Phaser.Math.Between(-game.settings.tileOffset/2, 
+                game.settings.tileOffset/2), "objects", "ceiling_1");
+
+            scene.add.existing(this);
+            scene.physics.add.existing(this);
+
+            this.newObstacle = false;
+
+        } else { // null == 6
+
+            super(scene, game.config.width+game.settings.tileOffset*2, Phaser.Math.Between(-game.settings.tileOffset/2, 
+                game.settings.tileOffset/2), "objects", "ceiling_2");
+
+            scene.add.existing(this);
+            scene.physics.add.existing(this);
+
+            this.newObstacle = false;
         }
 
         this.setVelocityX(speed);
@@ -53,7 +88,6 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
         this.scene = scene;
         this.speed = speed;
         this.num = num;
-        this.newObstacle = true;
 
         this.random = Phaser.Math.Between(game.config.width/4, game.config.width/2);
     }
