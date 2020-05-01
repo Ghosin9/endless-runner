@@ -8,6 +8,14 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
             //adjust hitbox
             this.body.setSize(82, 74, false);
             this.body.setOffset(0, 27);
+
+            this.topHitbox = scene.physics.add.sprite(this.x+25, this.y-40);
+            this.topHitbox.body.setSize(25, 25);
+            this.topHitbox.body.allowGravity = false;
+            this.topHitbox.body.immovable = true;
+            this.topHitbox.setVelocityX(speed);
+
+            scene.obstacles.add(this.topHitbox);
         } else if (num==2) {
             super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset*1.5, 
                 game.config.height-game.settings.tileOffset/2), "objects", "desk_2");
@@ -16,6 +24,14 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
             //adjust hitbox
             this.body.setSize(82, 74, false);
             this.body.setOffset(0, 27);
+
+            this.topHitbox = scene.physics.add.sprite(this.x+25, this.y-35);
+            this.topHitbox.body.setSize(25, 20);
+            this.topHitbox.body.allowGravity = false;
+            this.topHitbox.body.immovable = true;
+            this.topHitbox.setVelocityX(speed);
+
+            scene.obstacles.add(this.topHitbox);
         } else if (num==3) {
             super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset, 
                 game.config.height-game.settings.tileOffset/2), "objects", "trash");

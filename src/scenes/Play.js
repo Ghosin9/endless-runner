@@ -16,9 +16,18 @@ class Play extends Phaser.Scene {
         //box mode
         this.boxMode = false;
         this.boxModeSpeed = 300;
+        this.boxModeDifficulty = 2 //the lower the number, the more difficult
+
+        this.boxHitBox = this.physics.add.sprite(0, 0);
+        this.boxHitBox.body.setSize(50, 50);
+        this.boxHitBox.body.allowGravity = false;
+        this.boxHitBox.body.immovable = true;
+        this.boxHitBox.setCollideWorldBounds(true);
+
         //paper speed
         this.paperSpeed = this.obSpeed;
         this.paperSpeedMax = -1400;
+        this.numPaper = 1;
 
         //jumps
         this.jumpSpeed = -700;
@@ -158,14 +167,19 @@ class Play extends Phaser.Scene {
     }
 
     update() {
-
         if(!game.settings.gameOver) {
+            //BOTH MODES ---------------------------------------------------------------------------------------------------- BOTH MODES
+            //scrolling background
+            this.background.tilePositionX += this.backgroundSpeed;
+            //scrolling foreground
+            this.foreground.tilePositionX += this.foregroundSpeed;
+            //update score
+            this.curScore.text = ++this.score;
+
             //if not in box mode-------------------------------------------------------------------------------------------------- REGULAR MODE
             if(!this.boxMode){
-                //scrolling background
-                this.background.tilePositionX += this.backgroundSpeed;
-                //scrolling foreground
-                this.foreground.tilePositionX += this.foregroundSpeed;
+                //console.log("X: " + this.player.x);
+                //console.log("Y: " + this.player.y);
 
                 //add physics colliders
                 //ground
@@ -174,7 +188,6 @@ class Play extends Phaser.Scene {
                 this.physics.collide(this.player, this.obstacles, this.obstacleCollision, null, this);
                 //collectable
                 this.physics.overlap(this.player, this.collectables, this.collectableCollision, null, this);
-
 
                 //left right mechanics
                 if(this.cursors.left.isDown) {
@@ -235,26 +248,48 @@ class Play extends Phaser.Scene {
                         this.player.setVelocityY(this.fallSpeed);
                 }
                 
-                //update score
-                this.curScore.text = ++this.score;
             } else { //if in box mode ----------------------------------------------------------------------------------------- BOX MODE
-                this.physics.moveTo(this.player, 100, game.config.height/2, this.boxModeSpeed);
+
+                if(this.player.x >= 120) {
+                    console.log("moving to box position");
+                    //move player to back of window
+                    this.physics.moveTo(this.player, 110, game.config.height/2, this.boxModeSpeed*2);
+                } else {
+                    this.player.setVelocityX(0);
+                    //move extra hitbox to player
+                    this.boxHitBox.x = this.player.x;
+                    this.boxHitBox.y = this.player.y;
+                }
+
+                //console.log("X: " + this.player.x);
+                //console.log("Y: " + this.player.y);
+
+                //adjust hitboxes
+                this.player.body.setSize(40, 45, false);
+                this.player.body.setOffset(15, 20);
+                this.boxHitBox.body.setSize(64, 46, false);
+                this.boxHitBox.body.setOffset(-16, 25);
+
                 //player animation
                 this.player.anims.play("playerbox", true);
 
                 //paper collisions
                 this.physics.overlap(this.player, this.papers, this.paperCollision, null, this);
+                this.physics.overlap(this.boxHitBox, this.papers, this.paperCollision, null, this);
+                //lock hitboxes together
+                this.physics.collide(this.player, this.boxHitBox);
 
                 //up down code
                 if(this.cursors.up.isDown) {
                     this.player.setVelocityY(-this.boxModeSpeed);
+                    this.boxHitBox.setVelocityY(-this.boxModeSpeed);
                 } else if (this.cursors.down.isDown) {
                     this.player.setVelocityY(this.boxModeSpeed);
+                    this.boxHitBox.setVelocityY(this.boxModeSpeed);
                 } else {
                     this.player.setVelocityY(0);
+                    this.boxHitBox.setVelocityY(0);
                 }
-
-                
             }
         } else {
             this.player.anims.play('jump');
@@ -285,10 +320,10 @@ class Play extends Phaser.Scene {
         }
 
         //slide off death animation
-        this.player.setTint("0xFF0000");
-        this.player.body.setVelocityX(100);
-        this.player.body.setBounce(0.7, 0.7);
-        this.player.body.setDragX(100);
+        p.setTint("0xFF0000");
+        p.body.setVelocityX(100);
+        p.body.setBounce(0.7, 0.7);
+        p.body.setDragX(100);
 
         //set game over to true
         game.settings.gameOver = true;
@@ -306,24 +341,32 @@ class Play extends Phaser.Scene {
         localStorage.setItem("hiScore", game.settings.highScore.toString());
     }
 
-    paperCollision() {
-        this.difficultyTimer.paused = false;
+    paperCollision(p, paper) {
+        //console.log("paper collision");
+        this.boxMode = false;
 
-        this.paperSpeed = this.obSpeed;
+        //clear papers list
+        this.papers.clear(true, true);
+
+        //reset physics back to reg mode
+        this.physics.world.gravity.y = 2500;
+        this.foregroundSpeed = this.tempForeground;
+        this.backgroundSpeed = this.tempBackground;
+
+        //move hitboxes
+        this.boxHitBox.setPosition(0, 0);
+
+        this.time.addEvent({
+             delay: 1000,
+             callback: this.addObstacle,
+             callbackScope: this,
+        });
     }
 
     collectableCollision() {
         this.boxMode = true;
 
-        this.player.setVelocity(0, 0);
-
         this.physics.moveTo(this.player, 100, game.config.height/2, this.boxModeSpeed);
-
-        console.log("x: "+ this.player.body.velocity.x);
-        console.log("y: "+ this.player.body.velocity.y);
-
-        //pause level timer
-        this.difficultyTimer.paused = true;
 
         //clear all obstacles
         this.obstacles.clear(true, true);
@@ -332,6 +375,11 @@ class Play extends Phaser.Scene {
 
         //physics
         this.physics.world.gravity.y = 0
+        this.paperSpeed = this.obSpeed;
+
+        //save foreground and background speeds
+        this.tempForeground = this.foregroundSpeed;
+        this.tempBackground = this.backgroundSpeed;
     }
 
     addObstacle() {
@@ -341,8 +389,21 @@ class Play extends Phaser.Scene {
     }
 
     addPaper() {
-        let paper = new Paper(this, this.paperSpeed);
-        this.papers.add(paper);
+        let y = this.player.y;
+        let warnPaper = this.add.sprite(game.config.width-40, y, "objects", "paper_1");
+
+        this.time.addEvent({
+            delay: 500,
+            callback: () => {warnPaper.destroy(); this.spawnPaper(y);},
+            callbackScope: this,
+        });
+    }
+
+    spawnPaper(y){
+        if(this.boxMode) {
+            let paper = new Paper(this, y, this.paperSpeed);
+            this.papers.add(paper);
+        }
     }
 
     addCollectable() {
@@ -356,28 +417,48 @@ class Play extends Phaser.Scene {
     increaseDifficulty() {
         ++this.level;
         console.log("level: " + this.level);
-        //capping deskSpeed @ deskSpeedMax
-        if(this.obSpeed >= this.obSpeedMax) {
-            //increase deskSpeed
-            this.obSpeed -= 25;
-            //console.log("Speed: " + this.deskSpeed);
 
-            //increase music speed
+        if(!this.boxMode){
+            //capping deskSpeed @ deskSpeedMax
+            if(this.obSpeed >= this.obSpeedMax) {
+                //increase deskSpeed
+                this.obSpeed -= 25;
+                //console.log("Speed: " + this.deskSpeed);
 
+                //increase music speed
 
-            //increase sprite walking speed
-            this.player.anims.setTimeScale(this.n);
-            this.n += 0.3;
+                //increase sprite walking speed
+                this.player.anims.setTimeScale(this.n);
+                this.n += 0.3;
 
-            //increase foreground speed
-            ++this.foregroundSpeed;
+                //increase foreground speed
+                ++this.foregroundSpeed;
 
-            //increase background speed
-            ++this.backgroundSpeed;
-        }
+                //increase background speed
+                ++this.backgroundSpeed;
+            }
 
-        if(this.level%this.collectTimer == 0 && !this.boxMode){
-            this.addCollectable();
+            if(this.level%this.collectTimer == 0){
+                this.addCollectable();
+            }
+        } else { //if in box mode
+            if(this.paperSpeed >= this.paperSpeedMax) {
+                this.paperSpeed -= 50;
+
+                ++this.foregroundSpeed;
+                ++this.backgroundSpeed;
+            }
+
+            //spawn lots of paper!
+            this.time.addEvent({
+                delay: 300,
+                repeat: this.numPaper,
+                callback: this.addPaper,
+                callbackScope: this,
+            });
+
+            //increase the amount of paper spawned every level
+            this.numPaper = Math.floor(this.level/this.boxModeDifficulty);
         }
     }
 }
