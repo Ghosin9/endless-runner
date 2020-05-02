@@ -11,12 +11,12 @@ class Play extends Phaser.Scene {
 
         //level
         this.level = 0;
-        this.collectTimer = Phaser.Math.Between(5, 10);
+        this.collectTimer = Phaser.Math.Between(10, 14);
 
         //box mode
         this.boxMode = false;
         this.boxModeSpeed = 300;
-        this.boxModeDif = 4 //the lower the number, the more difficult
+        this.boxModeDif = 4;
 
         this.boxHitBox = this.physics.add.sprite(0, 0);
         this.boxHitBox.body.setSize(50, 50);
@@ -29,6 +29,11 @@ class Play extends Phaser.Scene {
         this.paperSpeedMax = -1400;
         this.numPaper = 1;
 
+        //workers
+        this.workerSpeed = -300;
+        this.workerDif = Phaser.Math.Between(7, 11);
+        this.blahSpeed = 400;
+
         //jumps
         this.jumpSpeed = -700;
         this.jumpCounter = 0;
@@ -39,7 +44,7 @@ class Play extends Phaser.Scene {
         this.obSpeedMax = -1000;
 
         //ceiling difficulty
-        this.ceilingDif = 4 //the lower the number, the more difficult
+        this.ceilingDif = Phaser.Math.Between(3,5);
 
         //current score
         this.score = 0;
@@ -480,6 +485,10 @@ class Play extends Phaser.Scene {
         this.collectables.add(collect);
     }
 
+    addWorker() {
+        let worker = new Worker(this, this.workerSpeed, this.blahSpeed, Phaser.Math.Between(1,2));
+    }
+
     increaseDifficulty() {
         ++this.level;
         console.log("level: " + this.level);
@@ -489,6 +498,10 @@ class Play extends Phaser.Scene {
         }
 
         if(!this.boxMode){
+            if(this.level%this.workerDif == 0) {
+                this.addWorker();
+            }
+
             //capping deskSpeed @ deskSpeedMax
             if(this.obSpeed >= this.obSpeedMax) {
                 //increase deskSpeed
@@ -510,6 +523,10 @@ class Play extends Phaser.Scene {
                 this.addCollectable();
             }
         } else { //if in box mode
+            if(this.level%(Math.floor(this.workerDif/3)) == 0) {
+                this.addWorker();
+            }
+
             if(this.paperSpeed >= this.paperSpeedMax) {
                 this.paperSpeed -= 50;
 
