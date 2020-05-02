@@ -50,22 +50,23 @@ class Load extends Phaser.Scene {
     }
 
     create() {
-        this.sound.play("xp");
+        this.scene.start("cutScene");
+        //this.sound.play("xp");
 
-        let textConfig = {
-            fontSize: "30px",
-            align: "center"
-        };
+        // let textConfig = {
+        //     fontSize: "30px",
+        //     align: "center"
+        // };
 
-        this.add.text(game.config.width/4, game.config.height/2-game.settings.textOffset, "a game by", textConfig);
-        this.add.text(game.config.width/4, game.config.height/2, "windows xp error sound", textConfig);
-        this.add.text(game.config.width/4, game.config.height/2+game.settings.textOffset, "click anywhere to continue", textConfig);
+        // this.add.text(game.config.width/4, game.config.height/2-game.settings.textOffset, "a game by", textConfig);
+        // this.add.text(game.config.width/4, game.config.height/2, "windows xp error sound", textConfig);
+        // this.add.text(game.config.width/4, game.config.height/2+game.settings.textOffset, "click anywhere to continue", textConfig);
 
-        //from nathan alticekrejheahkjrjeareajrkaerjkeaj https://github.com/nathanaltice/AVeryCapableGame/blob/master/src/main.js
-        let pointer = this.input.activePointer;
-        this.input.on('pointerdown', (pointer) => {
-            // start next scene and pass data
-            this.scene.start("menuScene");
-        });
+        // //from nathan alticekrejheahkjrjeareajrkaerjkeaj https://github.com/nathanaltice/AVeryCapableGame/blob/master/src/main.js
+        // let pointer = this.input.activePointer;
+        // this.input.on('pointerdown', (pointer) => {
+        //     // start next scene and pass data
+        //     this.scene.start("cutScene");
+        // });
     }
 }

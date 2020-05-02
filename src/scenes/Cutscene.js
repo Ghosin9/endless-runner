@@ -13,7 +13,8 @@ class Cutscene extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
 
         this.cameras.main.once("camerafadeoutcomplete", () => {
-            game.scene.start("playScene");
+            game.scene.stop("cutScene");
+            game.scene.start("menuScene");
         });
     }
 

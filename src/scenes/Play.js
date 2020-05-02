@@ -45,7 +45,7 @@ class Play extends Phaser.Scene {
         this.obSpeedMax = -1000;
 
         //ceiling difficulty
-        this.ceilingDif = Phaser.Math.Between(3,5); //3, 5
+        this.ceilingDif = Phaser.Math.Between(2,4); //2, 4
 
         //current score
         this.score = 0;
@@ -245,7 +245,7 @@ class Play extends Phaser.Scene {
                 }
 
                 //adjust hitbox of player if jumping
-                if(this.player.y >= 365) {
+                if(this.player.y >= 360) {
                     //if player is near ground, set to standing hitbox
                     this.player.body.setSize(40, 115, true);
                 } else {
