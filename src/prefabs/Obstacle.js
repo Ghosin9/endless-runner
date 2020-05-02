@@ -7,11 +7,11 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
             scene.add.existing(this);
             scene.physics.add.existing(this);
             //adjust hitbox
-            this.body.setSize(82, 74, false);
+            this.body.setSize(90, 82, false);
             this.body.setOffset(0, 27);
 
             this.topHitbox = scene.physics.add.sprite(this.x+25, this.y-40);
-            this.topHitbox.body.setSize(25, 25);
+            this.topHitbox.body.setSize(33, 25);
             this.topHitbox.body.allowGravity = false;
             this.topHitbox.body.immovable = true;
             this.topHitbox.setVelocityX(speed);
@@ -27,11 +27,11 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
             scene.add.existing(this);
             scene.physics.add.existing(this);
             //adjust hitbox
-            this.body.setSize(82, 74, false);
+            this.body.setSize(90, 82, false);
             this.body.setOffset(0, 27);
 
-            this.topHitbox = scene.physics.add.sprite(this.x+25, this.y-35);
-            this.topHitbox.body.setSize(25, 20);
+            this.topHitbox = scene.physics.add.sprite(this.x+25, this.y-37);
+            this.topHitbox.body.setSize(33, 25);
             this.topHitbox.body.allowGravity = false;
             this.topHitbox.body.immovable = true;
             this.topHitbox.setVelocityX(speed);
@@ -56,7 +56,7 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
             scene.add.existing(this);
             scene.physics.add.existing(this);
             //adjust hitbox
-            this.body.setSize(56, 100);
+            this.body.setSize(64, 109);
 
             this.newObstacle = true;
 
@@ -69,11 +69,11 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
             scene.physics.add.existing(this);
 
             //adjust hitboxes
-            this.body.setSize(250, 30, false);
+            this.body.setSize(260, 40, false);
             this.body.setOffset(3, 120);
 
             this.pole = scene.physics.add.sprite(this.x, this.y);
-            this.pole.body.setSize(40, 185);
+            this.pole.body.setSize(50, 195);
             this.pole.body.allowGravity = false;
             this.pole.body.immovable = true;
             this.pole.setVelocityX(speed);
@@ -91,12 +91,12 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
             scene.physics.add.existing(this);
 
             //adjust hitboxes
-            this.body.setSize(130, 63, false);
-            this.body.setOffset(4, 122);
+            this.body.setSize(140, 70, false);
+            this.body.setOffset(2, 122);
 
             this.pole = scene.physics.add.sprite(this.x, this.y);
             this.pole.body.setSize(45, 120, false);
-            this.pole.body.setOffset(-5, -75);
+            this.pole.body.setOffset(-5, -80);
             this.pole.body.allowGravity = false;
             this.pole.body.immovable = true;
             this.pole.setVelocityX(speed);

@@ -20,7 +20,7 @@ class Paper extends Phaser.Physics.Arcade.Sprite {
 
         this.scene = scene;
 
-        this.setCircle(17);
+        this.setCircle(20);
     }
 
     update() {

@@ -11,7 +11,7 @@ class Play extends Phaser.Scene {
 
         //level
         this.level = 0;
-        this.collectTimer = Phaser.Math.Between(10, 14);
+        this.collectTimer = Phaser.Math.Between(10, 14); //10, 14
 
         //box mode
         this.boxMode = false;
@@ -31,8 +31,8 @@ class Play extends Phaser.Scene {
 
         //workers
         this.workerSpeed = -300;
-        this.workerDif = Phaser.Math.Between(7, 11);
-        this.blahSpeed = 400;
+        this.workerDif = Phaser.Math.Between(7, 11); //7, 11
+        this.blahSpeed = 450;
 
         //jumps
         this.jumpSpeed = -700;
@@ -44,7 +44,7 @@ class Play extends Phaser.Scene {
         this.obSpeedMax = -1000;
 
         //ceiling difficulty
-        this.ceilingDif = Phaser.Math.Between(3,5);
+        this.ceilingDif = Phaser.Math.Between(3,5); //3, 5
 
         //current score
         this.score = 0;
@@ -60,26 +60,8 @@ class Play extends Phaser.Scene {
         //adding foreground
         this.foreground = this.add.tileSprite(0, 0, game.config.width, game.config.height, "foreground").setOrigin(0);
 
-        //gameover text
-        let gameText = {
-            fontFamily: 'Courier',
-            fontSize: '28px',
-            backgroundColor: '#CCC',
-            align: 'right',
-            padding: {
-                top: 5,
-                bottom: 5,
-            },
-        }
-
-        //add game over text
-        this.gameOverText = this.add.text(game.config.width/2, game.config.height/2 - game.settings.textOffset, "GAME OVER", gameText).setOrigin(0.5);
-        this.restart = this.add.text(game.config.width/2, game.config.height/2, "Press SPACE to Restart", gameText).setOrigin(0.5);
-        this.hiScore = this.add.text(game.config.width/2, game.config.height/2 + game.settings.textOffset, "High Score: " + game.settings.highScore, gameText).setOrigin(0.5);
-        //but make it transparent
-        this.gameOverText.alpha = 0;
-        this.restart.alpha = 0;
-        this.hiScore.alpha = 0;
+        //pause button
+        this.add.image(200, game.settings.textOffset/2, "pauseButton").setScale(0.5).setOrigin(0);
 
         //add highScore text image here
         this.scoreBackground = this.add.tileSprite(game.settings.textOffset/2, game.settings.textOffset/2, this.width, this.height, "score").setOrigin(0.07, 0.13).setScale(0.7); 
@@ -164,7 +146,8 @@ class Play extends Phaser.Scene {
 
         //set up phaser provided keyboard input
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.keyP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+        //pause key
+        this.keyPause = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
         //increase difficulty every 5 seconds
         this.difficultyTimer = this.time.addEvent({
@@ -185,6 +168,7 @@ class Play extends Phaser.Scene {
 
     update() {
         if(!game.settings.gameOver) {
+
             //BOTH MODES ---------------------------------------------------------------------------------------------------- BOTH MODES
             //scrolling background
             this.background.tilePositionX += this.backgroundSpeed;
@@ -193,8 +177,9 @@ class Play extends Phaser.Scene {
             //update score
             this.curScore.text = ++this.score;
 
-            if(Phaser.Input.Keyboard.JustDown(this.keyP)) {
-                
+            if(Phaser.Input.Keyboard.JustDown(this.keyPause)) {
+                game.scene.pause("playScene");
+                game.scene.start("pauseScene");
             }
 
             //if not in box mode-------------------------------------------------------------------------------------------------- REGULAR MODE
@@ -291,7 +276,7 @@ class Play extends Phaser.Scene {
                 //adjust hitboxes
                 this.player.body.setSize(40, 45, false);
                 this.player.body.setOffset(15, 20);
-                this.boxHitBox.body.setSize(64, 46, false);
+                this.boxHitBox.body.setSize(64, 43, false);
                 this.boxHitBox.body.setOffset(-16, 25);
 
                 //player animation
@@ -318,17 +303,6 @@ class Play extends Phaser.Scene {
         } else {
             this.player.anims.play('jump');
             this.player.setRotation(-1);
-
-            //update high Score
-            if(this.score >= game.settings.highScore) {
-                game.settings.highScore = this.score;
-                this.hiScore.text = "High Score: " + game.settings.highScore;
-            }
-
-            if(Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
-                this.scene.restart();
-                game.settings.gameOver = false;
-            }
         }
     }
 
@@ -355,20 +329,12 @@ class Play extends Phaser.Scene {
             p.body.setBounce(0.7, 0.7);
             p.body.setDragX(100);
 
-            //set game over to true
             game.settings.gameOver = true;
-
-            //making game over text visisble
-            this.gameOverText.alpha = 1;
-            this.restart.alpha = 1;
-            this.hiScore.alpha = 1;
-
-            //stop the difficulty timer
-            this.difficultyTimer.destroy();
-
-            //local storage setting hiScore
-            //Inspired by Nathan Altice's code https://github.com/nathanaltice/PaddleParkourP3/blob/master/src/scenes/GameOver.js
-            localStorage.setItem("hiScore", game.settings.highScore.toString());
+            this.time.addEvent({
+                delay: 2000,
+                callback: this.gameOver,
+                callbackScope: this,
+            });
         } else {
             this.paperCollision(p, ob);
         }
@@ -523,7 +489,7 @@ class Play extends Phaser.Scene {
                 this.addCollectable();
             }
         } else { //if in box mode
-            if(this.level%(Math.floor(this.workerDif/3)) == 0) {
+            if(this.level%2 == 0) {
                 this.addWorker();
             }
 
@@ -547,5 +513,21 @@ class Play extends Phaser.Scene {
             //increase the amount of paper spawned every level
             this.numPaper = Math.floor(this.level/this.boxModeDif);
         }
+    }
+
+    gameOver() {
+        //update high Score
+        if(this.score >= game.settings.highScore) {
+            game.settings.highScore = this.score;
+        }
+
+        //stop the difficulty timer
+        this.difficultyTimer.destroy();
+
+        //local storage setting hiScore
+        //Inspired by Nathan Altice's code https://github.com/nathanaltice/PaddleParkourP3/blob/master/src/scenes/GameOver.js
+        localStorage.setItem("hiScore", game.settings.highScore.toString());
+
+        game.scene.start("gameOverScene");
     }
 }

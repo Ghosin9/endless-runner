@@ -1,8 +1,8 @@
 class Worker extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, speed, blahSpeed, num) {
         if(num == 1) {
-            super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset*2, 
-                game.config.height-game.settings.tileOffset), "enemies", "enemy_1");
+            super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset*1.5, 
+                game.config.height-game.settings.tileOffset/2), "enemies", "enemy_1");
 
                 scene.add.existing(this);
                 scene.physics.add.existing(this);
@@ -22,8 +22,8 @@ class Worker extends Phaser.Physics.Arcade.Sprite {
 
                 this.anims.play("fWalk");
         } else { //num == 2
-            super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset*2, 
-                game.config.height-game.settings.tileOffset), "enemies", "enemy_5");
+            super(scene, game.config.width+game.settings.tileOffset, Phaser.Math.Between(game.config.height-game.settings.tileOffset*1.5, 
+                game.config.height-game.settings.tileOffset/2), "enemies", "enemy_5");
 
             scene.add.existing(this);
             scene.physics.add.existing(this);
@@ -54,7 +54,7 @@ class Worker extends Phaser.Physics.Arcade.Sprite {
             delay: 1500,
             callback: this.fireBlah,
             callbackScope: this,
-            repeat: 2,
+            repeat: 1,
             startAt: 1000,
         });
     }
@@ -68,7 +68,7 @@ class Worker extends Phaser.Physics.Arcade.Sprite {
     }
 
     fireBlah() {
-        this.blah = this.scene.physics.add.sprite(this.x-this.width/2, this.y-this.height/2, "enemies", "blah");
+        this.blah = this.scene.physics.add.sprite(this.x-this.width/2, this.y-this.height/2, "objects", "blah");
         this.blah.body.allowGravity = false;
         this.blah.body.setImmovable();
         this.scene.physics.moveTo(this.blah, this.scene.player.x, this.scene.player.y, this.blahSpeed);
