@@ -36,6 +36,7 @@ class GameOver extends Phaser.Scene {
         if(Phaser.Input.Keyboard.JustDown(this.keyMenu)) {
             game.scene.stop("gameOverScene");
             game.scene.stop("playScene");
+            game.scene.stop("cutScene");
             game.scene.start("menuScene");
             game.settings.gameOver = false;
         }

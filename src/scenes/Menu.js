@@ -13,6 +13,7 @@ class Menu extends Phaser.Scene {
         }
 
         this.sound.play("menuMusic", musicConfig);
+        //console.log("in menu scene");
     }
 
     update() {
