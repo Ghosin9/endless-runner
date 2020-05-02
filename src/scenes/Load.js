@@ -45,7 +45,7 @@ class Load extends Phaser.Scene {
         this.load.audio("suitcaseJump", "sfx_suitcase_jump.wav");
         this.load.audio("deskHit", "sfx_desk_hit.wav");
         this.load.audio("smash", "smash.wav");
-        this.load.audio("xp", "xpsound.mp3");
+        this.load.audio("xp", "xpSound.mp3");
 
     }
 
