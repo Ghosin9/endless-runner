@@ -19,7 +19,7 @@ class Menu extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
 
         if(this.cursors.space.isDown) {
-            this.scene.start("playScene");
+            this.scene.start("cutScene");
             this.sound.removeByKey("menuMusic");
         }
     }
