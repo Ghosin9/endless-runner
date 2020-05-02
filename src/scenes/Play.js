@@ -159,6 +159,7 @@ class Play extends Phaser.Scene {
 
         //set up phaser provided keyboard input
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.keyP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
         //increase difficulty every 5 seconds
         this.difficultyTimer = this.time.addEvent({
@@ -187,7 +188,9 @@ class Play extends Phaser.Scene {
             //update score
             this.curScore.text = ++this.score;
 
-            Phaser.Input.()
+            if(Phaser.Input.Keyboard.JustDown(this.keyP)) {
+                
+            }
 
             //if not in box mode-------------------------------------------------------------------------------------------------- REGULAR MODE
             if(!this.boxMode){
@@ -335,6 +338,10 @@ class Play extends Phaser.Scene {
                 this.sound.play("suitcaseJump");
             } else if (ob.num == 4) {
                 this.sound.play("plantHit");
+            } else if (ob.num == 5) {
+                this.sound.play("deskHit");
+            } else { //num == 6
+                this.sound.play("plantHit");
             }
 
             //slide off death animation
@@ -364,6 +371,8 @@ class Play extends Phaser.Scene {
 
     paperCollision(p, paper) {
         //console.log("paper collision");
+        this.sound.play("paperHit");
+
         this.boxMode = false;
 
         //clear papers list
@@ -442,6 +451,9 @@ class Play extends Phaser.Scene {
             warnPaper = this.add.sprite(game.config.width-40, y, "papers", "paper_d_1");
         }
 
+        //sound effects
+        this.sound.play("paperCrumble2");
+
         this.time.addEvent({
             delay: 500,
             callback: () => {
@@ -454,6 +466,7 @@ class Play extends Phaser.Scene {
 
     spawnPaper(y, num){
         if(this.boxMode) {
+            this.sound.play("paperCrumble1");
             let paper = new Paper(this, y, this.paperSpeed, num);
             this.papers.add(paper);
         }
