@@ -5,6 +5,7 @@ class Play extends Phaser.Scene {
 
     create() {
         //physics
+        this.skySpeed = 1;
         this.backgroundSpeed = 1;
         this.foregroundSpeed = 3;
         this.playerSpeed = 150;
@@ -50,7 +51,8 @@ class Play extends Phaser.Scene {
         this.score = 0;
 
         //add tileSprite background
-        this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, "background").setOrigin(0);
+        this.sky = this.add.tileSprite(0, 0, game.config.width, game.config.height, "sky").setOrigin(0);
+        this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, "city").setOrigin(0);
 
         //making floor
         this.ground = this.physics.add.sprite(0, game.config.height - game.settings.tileOffset/2, "floor").setOrigin(0);
@@ -170,6 +172,8 @@ class Play extends Phaser.Scene {
         if(!game.settings.gameOver) {
 
             //BOTH MODES ---------------------------------------------------------------------------------------------------- BOTH MODES
+            //scrolling sky
+            this.sky.tilePositionX += this.skySpeed;
             //scrolling background
             this.background.tilePositionX += this.backgroundSpeed;
             //scrolling foreground

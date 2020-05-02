@@ -62,8 +62,8 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
 
         } else if (num == 5) {
 
-            super(scene, game.config.width+game.settings.tileOffset*2.75, Phaser.Math.Between(-game.settings.tileOffset/4, 
-                game.settings.tileOffset*3/4), "objects", "ceiling_1");
+            super(scene, game.config.width+game.settings.tileOffset*2.75, Phaser.Math.Between(0, game.settings.tileOffset*3/4), 
+            "objects", "ceiling_1");
 
             scene.add.existing(this);
             scene.physics.add.existing(this);
@@ -84,8 +84,8 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
 
         } else { // null == 6
 
-            super(scene, game.config.width+game.settings.tileOffset*2, Phaser.Math.Between(-game.settings.tileOffset/4, 
-                game.settings.tileOffset*3/4), "objects", "ceiling_2");
+            super(scene, game.config.width+game.settings.tileOffset*2, Phaser.Math.Between(0, game.settings.tileOffset*3/4), 
+            "objects", "ceiling_2");
 
             scene.add.existing(this);
             scene.physics.add.existing(this);

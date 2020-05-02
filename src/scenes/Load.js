@@ -27,7 +27,8 @@ class Load extends Phaser.Scene {
         //background, floor and foreground
         this.load.image("foreground", "foreground.png");
         this.load.image("floor", "foreground_floor.png");
-        this.load.image("background", "background.png");
+        this.load.image("sky", "background_1.png");
+        this.load.image("city", "background_2.png");
 
         //sound assets
         this.load.path = "assets/sound/";
