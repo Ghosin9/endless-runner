@@ -495,8 +495,6 @@ class Play extends Phaser.Scene {
                 this.obSpeed -= 25;
                 //console.log("Speed: " + this.deskSpeed);
 
-                //increase music speed
-
                 //increase sprite walking speed
                 this.player.anims.setTimeScale(this.n);
                 this.n += 0.3;

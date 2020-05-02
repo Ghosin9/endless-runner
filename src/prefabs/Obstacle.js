@@ -68,6 +68,18 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
             scene.add.existing(this);
             scene.physics.add.existing(this);
 
+            //adjust hitboxes
+            this.body.setSize(250, 30, false);
+            this.body.setOffset(3, 120);
+
+            this.pole = scene.physics.add.sprite(this.x, this.y);
+            this.pole.body.setSize(40, 185);
+            this.pole.body.allowGravity = false;
+            this.pole.body.immovable = true;
+            this.pole.setVelocityX(speed);
+
+            scene.obstacles.add(this.pole);
+
             this.newObstacle = false;
 
         } else { // null == 6
@@ -77,6 +89,19 @@ class Obstacle extends Phaser.Physics.Arcade.Sprite {
 
             scene.add.existing(this);
             scene.physics.add.existing(this);
+
+            //adjust hitboxes
+            this.body.setSize(130, 63, false);
+            this.body.setOffset(4, 122);
+
+            this.pole = scene.physics.add.sprite(this.x, this.y);
+            this.pole.body.setSize(45, 120, false);
+            this.pole.body.setOffset(-5, -75);
+            this.pole.body.allowGravity = false;
+            this.pole.body.immovable = true;
+            this.pole.setVelocityX(speed);
+
+            scene.obstacles.add(this.pole);
 
             this.newObstacle = false;
         }
