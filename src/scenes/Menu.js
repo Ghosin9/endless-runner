@@ -13,15 +13,19 @@ class Menu extends Phaser.Scene {
         }
 
         this.sound.play("menuMusic", musicConfig);
+        this.cursors = this.input.keyboard.createCursorKeys();
         //console.log("in menu scene");
     }
 
     update() {
-        this.cursors = this.input.keyboard.createCursorKeys();
-
         if(this.cursors.space.isDown) {
-            this.scene.start("playScene");
+            game.scene.start("playScene");
+            game.scene.stop("menuScene");
             this.sound.removeByKey("menuMusic");
+        }
+
+        if(Phaser.Input.Keyboard.JustDown(this.cursors.right)) {
+            game.scene.start("instructionScene");
         }
     }
 }

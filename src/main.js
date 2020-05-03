@@ -27,7 +27,7 @@ let config = {
         }
     },
 
-    scene: [Load, Menu, Cutscene, Play, Pause, GameOver],
+    scene: [Load, Cutscene, Menu, Instruction, Play, Pause, GameOver],
 };
 
 let game = new Phaser.Game(config);

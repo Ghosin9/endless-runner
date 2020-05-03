@@ -475,18 +475,20 @@ class Play extends Phaser.Scene {
             //capping deskSpeed @ deskSpeedMax
             if(this.obSpeed >= this.obSpeedMax) {
                 //increase deskSpeed
-                this.obSpeed -= 25;
+                this.obSpeed -= 20;
                 //console.log("Speed: " + this.deskSpeed);
 
                 //increase sprite walking speed
                 this.player.anims.setTimeScale(this.n);
                 this.n += 0.3;
 
-                //increase foreground speed
-                ++this.foregroundSpeed;
+                if(this.level%3 == 0) {
+                    //increase foreground speed
+                    ++this.foregroundSpeed;
 
-                //increase background speed
-                ++this.backgroundSpeed;
+                    //increase background speed
+                    ++this.backgroundSpeed;
+                }
             }
 
             if(this.level%this.collectTimer == 0){
@@ -498,7 +500,7 @@ class Play extends Phaser.Scene {
             }
 
             if(this.paperSpeed >= this.paperSpeedMax) {
-                this.paperSpeed -= 50;
+                this.paperSpeed -= 40;
 
                 ++this.foregroundSpeed;
                 ++this.backgroundSpeed;

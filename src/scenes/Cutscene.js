@@ -9,8 +9,12 @@ class Cutscene extends Phaser.Scene {
         this.atSmashing = false;
         this.counter = 1;
         this.cameraAngle = 1536;
+        this.clicking = false;
 
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.input.on('pointerup', function () {
+            this.updateCounter();
+        }, this);
 
         this.cameras.main.once("camerafadeoutcomplete", () => {
             game.scene.stop("cutScene");
@@ -19,12 +23,10 @@ class Cutscene extends Phaser.Scene {
     }
 
     update() {
+        //let pointer = this.input.activePointer;
+
         if(Phaser.Input.Keyboard.JustDown(this.cursors.right) && !this.atSmashing) {
-            ++this.counter;
-
-            this.cameras.main.pan(this.cameraAngle, 256, 200);
-
-            this.cameraAngle += 1024;
+            this.updateCounter();
         }
 
         if(this.counter == 9 && !this.atSmashing) {
@@ -34,7 +36,20 @@ class Cutscene extends Phaser.Scene {
         }
     }
 
+    updateCounter() {
+        ++this.counter;
+
+        this.cameras.main.pan(this.cameraAngle, 256, 200);
+
+        this.cameraAngle += 1024;
+        
+        this.clicking = false;
+    }
+
     cutSceneSwitch() {
+
+        this.sound.play("smash");
+
         this.time.addEvent({
             delay: 200,
             callback: () => {

@@ -10,6 +10,7 @@ class Load extends Phaser.Scene {
         this.load.image("gameOver", "gameOver.png");
         this.load.image("pauseScreen", "pausebg.png");
         this.load.image("mainMenu", "menu.png");
+        this.load.image("instructionScreen", "instruction.png");
         this.load.image("score", "score.png");
         this.load.image("escButton", "esc.png");
         this.load.image("pauseButton", "pause.png");
