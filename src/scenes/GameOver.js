@@ -29,6 +29,7 @@ class GameOver extends Phaser.Scene {
         if(Phaser.Input.Keyboard.JustDown(this.keyRestart)) {
             game.scene.stop("gameOverScene");
             game.scene.start("playScene");
+            this.sound.play("select");
             game.settings.gameOver = false;
         }
 
@@ -39,6 +40,7 @@ class GameOver extends Phaser.Scene {
             game.scene.stop("instructionScene");
             game.scene.stop("cutScene");
             game.scene.start("menuScene");
+            this.sound.play("select");
             game.settings.gameOver = false;
         }
     }

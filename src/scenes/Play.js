@@ -12,7 +12,7 @@ class Play extends Phaser.Scene {
 
         //level
         this.level = 0;
-        this.collectTimer = Phaser.Math.Between(10, 14); //10, 14
+        this.collectTimer = Phaser.Math.Between(5, 7); //5, 7
 
         //box mode
         this.boxMode = false;
@@ -32,7 +32,7 @@ class Play extends Phaser.Scene {
 
         //workers
         this.workerSpeed = -300;
-        this.workerDif = Phaser.Math.Between(7, 11); //7, 11
+        this.workerDif = Phaser.Math.Between(7, 10); //7, 10
         this.blahSpeed = 450;
 
         //jumps
@@ -482,7 +482,7 @@ class Play extends Phaser.Scene {
                 this.player.anims.setTimeScale(this.n);
                 this.n += 0.3;
 
-                if(this.level%3 == 0) {
+                if(this.level%2 == 0) {
                     //increase foreground speed
                     ++this.foregroundSpeed;
 
@@ -500,7 +500,7 @@ class Play extends Phaser.Scene {
             }
 
             if(this.paperSpeed >= this.paperSpeedMax) {
-                this.paperSpeed -= 40;
+                this.paperSpeed -= 30;
 
                 ++this.foregroundSpeed;
                 ++this.backgroundSpeed;

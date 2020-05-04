@@ -47,6 +47,7 @@ class Load extends Phaser.Scene {
         this.load.audio("deskHit", "sfx_desk_hit.wav");
         this.load.audio("smash", "smash.wav");
         this.load.audio("xp", "xpSound.mp3");
+        this.load.audio("blah", "blah.wav");
 
     }
 

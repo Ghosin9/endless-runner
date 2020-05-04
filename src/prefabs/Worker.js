@@ -72,6 +72,7 @@ class Worker extends Phaser.Physics.Arcade.Sprite {
         this.blah.body.allowGravity = false;
         this.blah.body.setImmovable();
         this.scene.physics.moveTo(this.blah, this.scene.player.x, this.scene.player.y, this.blahSpeed);
+        this.scene.sound.play("blah");
 
         if(this.scene.boxMode)
             this.scene.papers.add(this.blah);

@@ -9,16 +9,25 @@ class Cutscene extends Phaser.Scene {
         this.atSmashing = false;
         this.counter = 1;
         this.cameraAngle = 1536;
-        this.clicking = false;
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.input.on('pointerup', function () {
-            this.updateCounter();
+            if(!this.atSmashing)
+                this.updateCounter();
         }, this);
 
         this.cameras.main.once("camerafadeoutcomplete", () => {
             game.scene.stop("cutScene");
             game.scene.start("menuScene");
+        });
+
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                this.updateCounter();
+            },
+            callbackScope: this,
+            loop: true,
         });
     }
 
@@ -37,13 +46,13 @@ class Cutscene extends Phaser.Scene {
     }
 
     updateCounter() {
-        ++this.counter;
+        if (!this.atSmashing){
+            ++this.counter;
 
-        this.cameras.main.pan(this.cameraAngle, 256, 200);
+            this.cameras.main.pan(this.cameraAngle, 256, 200);
 
-        this.cameraAngle += 1024;
-        
-        this.clicking = false;
+            this.cameraAngle += 1024;
+        }
     }
 
     cutSceneSwitch() {
