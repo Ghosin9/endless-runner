@@ -24,7 +24,7 @@ class Menu extends Phaser.Scene {
     }
 
     update() {
-        if(this.cursors.space.isDown) {
+        if(Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
             this.cameras.main.fadeOut(1000);
             this.sound.play("select");
         }
